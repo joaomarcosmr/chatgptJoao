@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat with AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .chat-container {
+      width: 400px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    .message-container {
+      margin-bottom: 10px;
+    }
+    .user-message {
+      background-color: #f0f0f0;
+      padding: 8px;
+      border-radius: 4px;
+      margin-right: auto;
+      margin-left: 20px;
+      max-width: 70%;
+    }
+    .ai-message {
+      background-color: #e5f3ff;
+      padding: 8px;
+      border-radius: 4px;
+      margin-left: auto;
+      margin-right: 20px;
+      max-width: 70%;
+    }
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h1 style="text-align: center;">CHAT GPT DO JOÃO</h1>
+    <div class="message-container" id="user-message-container" style="display: none;">
+      <div class="user-message" id="user-message">
+        Usuário: Sua pergunta aqui:
+      </div>
+    </div>
+    <div class="message-container">
+      <div class="ai-message" id="ai-response">
+        Digite sua dúvida...
+      </div>
+    </div>
+    <div>
+      <input type="text" id="user-input" style="width: 90%; padding: 10px; margin-top: 10px;" placeholder="Digite sua pergunta...">
+      <button id="send-button">Enviar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const apiUrl = 'http://localhost:3000/send-message';
+    let aiResponse = 'Pensando...'
+
+    async function sendMessage(message) {
+      try {
+        aiResponse = 'Pensando...'
+        const response = await axios.post(apiUrl, { userMessage: message });
+
+        if (!response.data.reply) {
+          throw new Error('No response from AI');
+        }
+
+        return response.data.reply;
+      } catch (error) {
+        console.error('Error sending message:', error.message);
+        return 'No response from AI';
+      }
+    }
+
+    document.getElementById('send-button').addEventListener('click', async () => {
+      const userInput = document.getElementById('user-input').value.trim();
+      if (userInput === '') return;
+
+      const userMessageContainer = document.getElementById('user-message-container');
+      const userMessage = document.getElementById('user-message');
+      userMessage.textContent = `User: ${userInput}`;
+      userMessageContainer.style.display = 'block';
+
+      aiResponse = await sendMessage(userInput);
+      const aiResponseContainer = document.getElementById('ai-response');
+      aiResponseContainer.textContent = `João Marcos Lindo: ${aiResponse}`;
+
+      document.getElementById('user-input').value = '';
+    });
+  </script>
+</body>
+</html>

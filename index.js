@@ -2,8 +2,11 @@ import OpenAI from 'openai';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
 
 dotenv.config();
+
+const __dirname = path.resolve(); // Obter diretório atual
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,8 +15,12 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+
+// Servindo arquivos estáticos (como index.html)
+app.use(express.static(path.join(__dirname, 'src')));
 
 async function main(userMessage) {
   try {
@@ -35,6 +42,12 @@ async function main(userMessage) {
   }
 }
 
+// Rota para renderizar o index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'index.html'));
+});
+
+// Rota para lidar com mensagens enviadas pelo frontend
 app.post('/send-message', async (req, res) => {
   const { userMessage } = req.body;
 
