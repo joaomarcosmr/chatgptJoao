@@ -15,8 +15,12 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const corsOptions = {
+  origin: 'https://chatgptjoao.onrender.com/' // substitua com seu próprio domínio
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Servindo arquivos estáticos (como index.html)
@@ -42,12 +46,10 @@ async function main(userMessage) {
   }
 }
 
-// Rota para renderizar o index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'src', 'index.html'));
 });
 
-// Rota para lidar com mensagens enviadas pelo frontend
 app.post('/send-message', async (req, res) => {
   const { userMessage } = req.body;
 
